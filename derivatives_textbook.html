@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Derivatives Market: Trends & Research Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F8FF; 
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; 
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; 
+            max-height: 450px; 
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .material-card {
+            background-color: #FFFFFF; 
+            border-radius: 0.5rem; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem; 
+        }
+        .text-main-dark { color: #00008B; } 
+        .text-main-medium { color: #0000CD; } 
+        .bg-accent-sky { background-color: #87CEEB; } 
+        .text-accent-sky { color: #87CEEB; }
+        .border-accent-sky { border-color: #87CEEB; }
+        .bg-accent-teal { background-color: #20B2AA; } 
+        .text-accent-teal { color: #20B2AA; }
+        .bg-accent-steel { background-color: #4682B4; } 
+        .text-accent-steel { color: #4682B4; }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        nav a {
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #20B2AA; 
+        }
+        .stat-value {
+            font-size: 3rem; 
+            font-weight: 700; 
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 1rem; 
+            color: #4A5568; 
+        }
+        .flowchart-step {
+            border: 2px solid #4682B4; 
+            padding: 1rem;
+            border-radius: 0.375rem; 
+            text-align: center;
+            background-color: #E0F2FE; 
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .flowchart-step:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .flowchart-arrow {
+            font-size: 2rem;
+            color: #4682B4; 
+            margin: 0 0.5rem;
+            align-self: center;
+        }
+        .interactive-card {
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(70, 130, 180, 0.2); /* SteelBlue shadow */
+        }
+        .details-content {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #F8FAFC; /* Tailwind gray-50 */
+            border-left: 4px solid #4682B4; /* SteelBlue */
+            font-size: 0.9rem;
+        }
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.6); 
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; 
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+            max-width: 700px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .payoff-diagram {
+            width: 100%;
+            height: 200px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            position: relative;
+            margin-top: 10px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .payoff-line {
+            position: absolute;
+            background-color: #20B2AA; /* LightSeaGreen */
+            height: 3px;
+        }
+        .axis {
+            position: absolute;
+            background-color: #333;
+        }
+        .x-axis { width: 100%; height: 1px; bottom: 50%; left: 0; }
+        .y-axis { width: 1px; height: 100%; left: 10%; top: 0; } /* Adjusted Y-axis to start from left */
+        .axis-label {
+            position: absolute;
+            font-size: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+<body class="text-main-dark">
+
+    <!-- 
+        Chosen Color Palette: "Brilliant Blues"
+        Primary Background: #F0F8FF (AliceBlue)
+        Card Backgrounds: #FFFFFF (White)
+        Text Color (Dark): #00008B (DarkBlue)
+        Text Color (Medium): #0000CD (MediumBlue)
+        Accent Color 1 (Charts, Highlights): #87CEEB (SkyBlue)
+        Accent Color 2 (Charts, Highlights): #20B2AA (LightSeaGreen/Tealish Blue)
+        Accent Color 3 (Charts, Highlights): #4682B4 (SteelBlue)
+
+        Infographic Plan Summary (Enhanced for Interactivity):
+        Section 1: Introduction - The Scale of Derivatives. (Big Number)
+        Section 2: Market Overview - OTC vs. Exchange-Traded focus on OTC. (Donut Chart - clickable segments for more info)
+        Section 3: Deep Dive into OTC Derivatives - What's Being Traded? (Bar Chart - toggle datasets)
+        Section 4: The Evolution of Risk Management - Dodd-Frank, CCPs, SEFs. (HTML/Tailwind Flowchart - hover effects, Donut Chart)
+        Section 5: Why Use Derivatives? Key Applications. (HTML/Tailwind Icon Cards - clickable for examples)
+        Section 6: Key Derivative Instruments - A Snapshot. (HTML/Tailwind Info Cards - clickable to show details & simple payoff concept)
+        Section 7: Interactive Hedging Example - Protective Put. (Slider to change stock price, see payoff)
+        Section 8: Future Outlook & Key Takeaways. (HTML List)
+
+        Visualization Choices Summary (Confirming NO SVG, NO MERMAID JS):
+        - Big Numbers: HTML/Tailwind. (No SVG)
+        - Donut Chart (OTC Breakdown, CCP Clearing %): Chart.js (Canvas). Clickable segments. (No SVG)
+        - Bar Chart (OTC Types): Chart.js (Canvas). Toggleable datasets. (No SVG)
+        - Flow Chart (CCP Process): HTML/Tailwind with Unicode arrows. Hover effects. (No SVG, No Mermaid JS)
+        - Icon Cards (Uses of Derivatives, Instrument Snapshot): HTML/Tailwind with Unicode characters. Clickable for details. (No SVG)
+        - List (Key Takeaways): HTML/Tailwind. (No SVG)
+        - Interactive Payoff Display: HTML/CSS for simple visualization. (No SVG)
+
+        Confirmation: NEITHER Mermaid JS NOR SVG were used anywhere in this output.
+    -->
+
+    <nav class="shadow-md">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-main-medium">Interactive Derivatives Insights</a>
+            <div class="space-x-2 md:space-x-4 text-sm md:text-base">
+                <a href="#introduction" class="text-main-dark hover:text-accent-teal">Intro</a>
+                <a href="#market-overview" class="text-main-dark hover:text-accent-teal">Overview</a>
+                <a href="#otc-deep-dive" class="text-main-dark hover:text-accent-teal">OTC Details</a>
+                <a href="#risk-management" class="text-main-dark hover:text-accent-teal">Risk Mgmt</a>
+                <a href="#applications" class="text-main-dark hover:text-accent-teal">Uses</a>
+                <a href="#instruments" class="text-main-dark hover:text-accent-teal">Instruments</a>
+                <a href="#interactive-hedge" class="text-main-dark hover:text-accent-teal">Hedging Sim</a>
+                <a href="#outlook" class="text-main-dark hover:text-accent-teal">Outlook</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <section id="introduction" class="pt-8 pb-4">
+            <div class="material-card text-center">
+                <h1 class="text-4xl font-bold text-main-medium mb-4">The Colossal World of Financial Derivatives</h1>
+                <p class="text-lg text-gray-700 mb-6">
+                    Financial derivatives are contracts whose value is derived from an underlying asset, indicator, or commodity. They are pivotal instruments in modern finance, facilitating risk management, speculation, and price discovery across global markets.
+                </p>
+                <div class="bg-accent-sky text-white p-8 rounded-lg shadow-lg inline-block">
+                    <div class="stat-value">$729.8 Trillion</div>
+                    <div class="stat-label mt-2">Global OTC Derivatives Notional Outstanding (Mid-2024)</div>
+                </div>
+                <p class="text-sm text-gray-600 mt-4">
+                    This staggering figure highlights the sheer scale and economic significance of the Over-the-Counter (OTC) derivatives market alone.
+                </p>
+            </div>
+        </section>
+
+        <section id="market-overview" class="py-8">
+            <div class="material-card">
+                <h2 class="text-3xl font-semibold text-main-medium mb-6 text-center">Market Landscape: The Dominance of OTC</h2>
+                <p class="text-gray-700 mb-8 text-center">
+                    Derivatives trade in two main environments: organized exchanges (ETDs) and directly between parties (OTC). The OTC market is significantly larger in notional amounts. Click on a chart segment for more details.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-semibold text-main-dark mb-4">OTC Market Snapshot</h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><strong>Notional Outstanding:</strong> $729.8 trillion (Mid-2024)</li>
+                            <li><strong>Gross Market Value:</strong> $17.1 trillion (Mid-2024)</li>
+                            <li><strong>Key Feature:</strong> Customization and bilateral agreements.</li>
+                            <li><strong>Trend:</strong> Continued growth, especially in FX derivatives.</li>
+                        </ul>
+                         <div id="otcDonutDetails" class="mt-4 p-3 bg-blue-50 border-l-4 border-blue-500 text-blue-700 rounded">
+                            <p>Details about the selected segment will appear here.</p>
+                        </div>
+                    </div>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="otcMarketDonutChart"></canvas>
+                    </div>
+                </div>
+                 <p class="text-xs text-gray-500 mt-4 text-center">Data based on BIS figures via ISDA, Mid-2024. Gross market value represents 2.3% of notional outstanding.</p>
+            </div>
+        </section>
+
+        <section id="otc-deep-dive" class="py-8">
+            <div class="material-card">
+                <h2 class="text-3xl font-semibold text-main-medium mb-6 text-center">Anatomy of the OTC Market</h2>
+                <p class="text-gray-700 mb-8 text-center">
+                    Interest rate derivatives overwhelmingly dominate the OTC market. Use the buttons to toggle visibility of different derivative types in the chart below.
+                </p>
+                <div class="mb-4 text-center space-x-2">
+                    <button id="toggleIRD" class="bg-accent-sky hover:bg-sky-600 text-white font-bold py-2 px-4 rounded text-sm">Toggle IRD</button>
+                    <button id="toggleFXD" class="bg-accent-teal hover:bg-teal-600 text-white font-bold py-2 px-4 rounded text-sm">Toggle FXD</button>
+                    <button id="toggleOtherOTC" class="bg-accent-steel hover:bg-steel-600 text-white font-bold py-2 px-4 rounded text-sm">Toggle Others</button>
+                </div>
+                <div class="chart-container h-96 md:h-[500px] max-w-3xl">
+                    <canvas id="otcBreakdownBarChart"></canvas>
+                </div>
+                <p class="text-gray-600 mt-6">
+                    <strong>Interest Rate Derivatives (IRDs)</strong>: $578.8T. <strong>Foreign Exchange (FX) Derivatives</strong>: $129.9T. <strong>Equity</strong>: $8.7T. <strong>Commodity</strong>: $2.7T. <strong>Credit</strong>: $9.2T.
+                </p>
+            </div>
+        </section>
+
+        <section id="risk-management" class="py-8">
+            <div class="material-card">
+                <h2 class="text-3xl font-semibold text-main-medium mb-6 text-center">Strengthening the System: Post-Crisis Reforms</h2>
+                <p class="text-gray-700 mb-8 text-center">
+                    Reforms like Dodd-Frank aim to increase transparency and reduce systemic risk, promoting central clearing (CCPs) and organized trading (SEFs). Hover over flowchart steps for more.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h3 class="text-2xl font-semibold text-main-dark mb-4">The Role of Central Counterparties (CCPs)</h3>
+                        <div class="flex flex-col items-center space-y-2 md:flex-row md:space-y-0 md:space-x-2 justify-center my-4">
+                            <div class="flowchart-step" title="Party A initiates a trade.">Party A</div>
+                            <div class="flowchart-arrow transform rotate-90 md:rotate-0">➔</div>
+                            <div class="flowchart-step bg-accent-steel text-white" title="CCP becomes buyer to A and seller to B, mitigating counterparty risk.">CCP</div>
+                            <div class="flowchart-arrow transform rotate-90 md:rotate-0">➔</div>
+                            <div class="flowchart-step" title="Party B completes the trade with the CCP.">Party B</div>
+                        </div>
+                         <p class="text-gray-600 mt-2 text-sm">The CCP guarantees trade performance through margining and default fund contributions.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <h3 class="text-2xl font-semibold text-main-dark mb-4 text-center">Central Clearing Progress</h3>
+                        <div class="chart-container h-72 md:h-80 w-full max-w-xs">
+                            <canvas id="centralClearingDonutChart"></canvas>
+                        </div>
+                        <p class="text-gray-600 mt-4 text-center">
+                            A significant portion of OTC derivatives, especially IRDs (76.9%) and CDS (67.9%), are now centrally cleared (Mid-2024 data).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="applications" class="py-8">
+            <div class="material-card">
+                <h2 class="text-3xl font-semibold text-main-medium mb-8 text-center">Core Functions: Hedging and Speculation</h2>
+                <p class="text-gray-700 mb-8 text-center">
+                    Derivatives allow entities to manage risks (hedging) or profit from price movements (speculation). Click cards for examples.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="interactive-card p-6 rounded-lg border-2 border-accent-teal" onclick="showModal('hedgingModal')">
+                        <div class="flex items-center mb-3">
+                            <span class="text-4xl mr-4">🛡️</span>
+                            <h3 class="text-2xl font-semibold text-accent-teal">Hedging: Managing Risk</h3>
+                        </div>
+                        <p class="text-gray-600">
+                            Protect against adverse price movements. E.g., a farmer locks in crop prices.
+                        </p>
+                    </div>
+                    <div class="interactive-card p-6 rounded-lg border-2 border-accent-steel" onclick="showModal('speculationModal')">
+                        <div class="flex items-center mb-3">
+                            <span class="text-4xl mr-4">📈</span>
+                            <h3 class="text-2xl font-semibold text-accent-steel">Speculation: Seeking Profit</h3>
+                        </div>
+                        <p class="text-gray-600">
+                            Bet on future price direction. E.g., a trader buys options expecting a stock rise.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="instruments" class="py-8">
+            <div class="material-card">
+                <h2 class="text-3xl font-semibold text-main-medium mb-8 text-center">The "Big Four" Derivative Instruments</h2>
+                <p class="text-gray-700 mb-8 text-center">
+                    Click on each instrument to learn more about its characteristics and a simplified payoff concept.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="interactive-card p-4 rounded-lg bg-blue-50 border border-blue-200" onclick="toggleDetails('futuresDetails')">
+                        <h4 class="text-xl font-semibold text-main-dark mb-2">Futures 📜</h4>
+                        <p class="text-sm text-gray-600">Standardized contracts, exchange-traded, obligatory.</p>
+                        <div id="futuresDetails" class="details-content">
+                            <p><strong>Characteristics:</strong> Standardized terms, traded on exchanges, central clearing reduces counterparty risk, daily mark-to-market, leverage via margin.</p>
+                            <p><strong>Payoff Concept (Long Futures):</strong> Profit if underlying price > futures entry price. Loss if underlying price < futures entry price. Linear payoff.</p>
+                            <div class="payoff-diagram" id="futuresPayoff"></div>
+                        </div>
+                    </div>
+                    <div class="interactive-card p-4 rounded-lg bg-green-50 border border-green-200" onclick="toggleDetails('forwardsDetails')">
+                        <h4 class="text-xl font-semibold text-main-dark mb-2">Forwards 🤝</h4>
+                        <p class="text-sm text-gray-600">Customizable OTC contracts, obligatory.</p>
+                        <div id="forwardsDetails" class="details-content">
+                            <p><strong>Characteristics:</strong> Customized terms, traded OTC, bilateral counterparty risk, settled at maturity.</p>
+                            <p><strong>Payoff Concept (Long Forward):</strong> Similar to futures; profit if underlying price > forward entry price. Linear payoff.</p>
+                             <div class="payoff-diagram" id="forwardsPayoff"></div>
+                        </div>
+                    </div>
+                    <div class="interactive-card p-4 rounded-lg bg-yellow-50 border border-yellow-200" onclick="toggleDetails('optionsDetails')">
+                        <h4 class="text-xl font-semibold text-main-dark mb-2">Options ⚖️</h4>
+                        <p class="text-sm text-gray-600">Right, not obligation, to buy/sell. Premium paid.</p>
+                        <div id="optionsDetails" class="details-content">
+                            <p><strong>Characteristics:</strong> Buyer pays premium for right (not obligation), seller receives premium and has obligation if exercised. Strike price, expiration date are key.</p>
+                            <p><strong>Payoff Concept (Long Call Option):</strong> Profit if underlying price > (strike price + premium). Max loss = premium. Asymmetric payoff.</p>
+                             <div class="payoff-diagram" id="callOptionPayoff"></div>
+                        </div>
+                    </div>
+                    <div class="interactive-card p-4 rounded-lg bg-purple-50 border border-purple-200" onclick="toggleDetails('swapsDetails')">
+                        <h4 class="text-xl font-semibold text-main-dark mb-2">Swaps 🔄</h4>
+                        <p class="text-sm text-gray-600">Exchange of cash flows over time, typically OTC.</p>
+                        <div id="swapsDetails" class="details-content">
+                            <p><strong>Characteristics:</strong> Agreement to exchange series of cash flows (e.g., fixed vs. floating interest rates). Customized, OTC, manages long-term risks.</p>
+                            <p><strong>Concept:</strong> Used to transform risk profiles (e.g., floating-rate debt to fixed-rate).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="interactive-hedge" class="py-8">
+            <div class="material-card">
+                <h2 class="text-3xl font-semibold text-main-medium mb-6 text-center">Interactive Hedging: Protective Put Example</h2>
+                <p class="text-gray-700 mb-4 text-center">
+                    An investor owns 100 shares of XYZ Corp. They buy a put option to protect against price declines.
+                    Adjust the stock price at expiration to see the outcome.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div>
+                        <p><strong>Scenario:</strong></p>
+                        <ul class="list-disc list-inside text-sm text-gray-600 mb-4">
+                            <li>Initial Stock Price: $150</li>
+                            <li>Shares Owned: 100</li>
+                            <li>Put Option Strike Price: $145</li>
+                            <li>Put Option Premium Paid: $3 per share (Total $300)</li>
+                        </ul>
+                        <label for="stockPriceSlider" class="block text-sm font-medium text-gray-700">Stock Price at Expiration: $<span id="stockPriceValue">150</span></label>
+                        <input type="range" id="stockPriceSlider" min="120" max="180" value="150" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div>
+                        <p class="font-semibold"><strong>Outcome:</strong></p>
+                        <p class="text-sm">Value of Stock: $<span id="stockValue">15000</span></p>
+                        <p class="text-sm">Value of Put Option: $<span id="putValue">0</span></p>
+                        <p class="text-sm">Cost of Put Option: -$300</p>
+                        <p class="text-sm font-semibold">Net Portfolio Value: $<span id="netPortfolioValue">14700</span></p>
+                        <p class="text-sm font-semibold">Profit/Loss on Stock (unhedged): $<span id="stockProfitLoss">0</span></p>
+                        <p class="text-sm font-semibold">Profit/Loss on Hedged Position: $<span id="hedgedProfitLoss">-300</span></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-500">
+                    This interactive example demonstrates how a protective put limits downside losses while allowing participation in upside gains, minus the cost of the option premium.
+                </div>
+            </div>
+        </section>
+
+        <section id="outlook" class="py-8">
+            <div class="material-card">
+                <h2 class="text-3xl font-semibold text-main-medium mb-6 text-center">Market Dynamics & Concluding Thoughts</h2>
+                 <div class="bg-gray-100 p-6 rounded-lg">
+                    <h3 class="text-2xl font-semibold text-main-dark mb-4">Key Takeaways:</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-3">
+                        <li><strong>Immense Scale:</strong> OTC derivatives > $700 trillion notional.</li>
+                        <li><strong>Risk Management Core:</strong> Central clearing vital.</li>
+                        <li><strong>Dominant Instruments:</strong> IRDs and FX derivatives.</li>
+                        <li><strong>Dual Purpose:</strong> Hedging and speculation.</li>
+                        <li><strong>Ongoing Evolution:</strong> Regulation and technology drive change.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center py-8 text-gray-600 text-sm">
+            <p>&copy; 2025 Interactive Derivatives Insights. Educational purposes only.</p>
+        </footer>
+    </div>
+
+    <div id="hedgingModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button" onclick="closeModal('hedgingModal')">&times;</span>
+        <h3 class="text-2xl font-semibold text-accent-teal mb-3">Hedging Example: Farmer Locks in Crop Price</h3>
+        <p class="text-gray-700">A farmer expects to harvest 5,000 bushels of corn. The current price is good, but they fear prices might fall by harvest time. They sell corn futures contracts to lock in a selling price.</p>
+        <p class="mt-2 text-gray-700"><strong>If prices fall:</strong> The loss on their physical corn is offset by gains on their futures position.</p>
+        <p class="mt-1 text-gray-700"><strong>If prices rise:</strong> The gain on their physical corn is offset by losses on their futures position. They miss out on higher spot prices but achieved price certainty.</p>
+        <p class="mt-3 text-sm text-gray-500">Hedging aims to reduce risk, not necessarily to maximize profit.</p>
+      </div>
+    </div>
+
+    <div id="speculationModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button" onclick="closeModal('speculationModal')">&times;</span>
+        <h3 class="text-2xl font-semibold text-accent-steel mb-3">Speculation Example: Trader Bets on Oil Price Rise</h3>
+        <p class="text-gray-700">A speculator believes crude oil prices will increase. They buy crude oil futures contracts. They don't intend to take delivery of oil but aim to profit from the price change.</p>
+        <p class="mt-2 text-gray-700"><strong>If oil prices rise:</strong> They sell their futures contracts at a higher price for a profit.</p>
+        <p class="mt-1 text-gray-700"><strong>If oil prices fall:</strong> They sell their futures contracts at a lower price for a loss.</p>
+        <p class="mt-3 text-sm text-gray-500">Speculators use leverage, which can amplify both gains and losses.</p>
+      </div>
+    </div>
+
+    <script>
+        let otcMarketDonutChartInstance, otcBreakdownBarChartInstance, centralClearingDonutChartInstance;
+
+        function wrapLabels(label, maxWidth) {
+            const words = label.split(' ');
+            let lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > maxWidth && currentLine.length > 0) {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                } else {
+                    currentLine += word + ' ';
+                }
+            }
+            lines.push(currentLine.trim());
+            return lines.length > 1 ? lines : label; 
+        }
+        
+        const commonTooltipTitleCallback = function(tooltipItems) {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(' ');
+            } else {
+              return label;
+            }
+        };
+
+        const otcMarketRawData = [
+            { type: 'Interest Rate Derivatives', value: 578.8, details: "IRDs are contracts like swaps, options, and futures based on interest rates. They are the largest segment, used to hedge against or speculate on interest rate movements." },
+            { type: 'FX Derivatives', value: 129.9, details: "FX derivatives involve currency exchange rates. Used by MNCs to hedge currency risk and by investors to speculate on exchange rate changes." },
+            { type: 'Equity Derivatives', value: 8.7, details: "These derive value from equity instruments (stocks, indices). Include options on stocks, stock index futures, etc." },
+            { type: 'Credit Derivatives', value: 9.2, details: "Contracts like Credit Default Swaps (CDS) that transfer credit risk from one party to another." },
+            { type: 'Commodity Derivatives', value: 2.7, details: "Based on physical commodities like oil, gold, agricultural products. Used by producers and consumers to hedge price risk." }
+        ];
+        const otcOtherValue = 729.8 - otcMarketRawData.reduce((sum, item) => sum + item.value, 0);
+        otcMarketRawData.push({ type: 'Other/Unallocated', value: otcOtherValue, details: "Includes other miscellaneous or unallocated derivative types." });
+
+        const otcMarketData = {
+            labels: otcMarketRawData.map(item => wrapLabels(item.type, 16)),
+            datasets: [{
+                label: 'OTC Derivatives Notional Outstanding (Mid-2024, $ Trillion)',
+                data: otcMarketRawData.map(item => item.value),
+                backgroundColor: ['#87CEEB', '#20B2AA', '#4682B4', '#6495ED', '#00BFFF', '#B0C4DE'],
+                borderColor: '#FFFFFF',
+                borderWidth: 2
+            }]
+        };
+        
+        otcMarketDonutChartInstance = new Chart(document.getElementById('otcMarketDonutChart'), {
+            type: 'doughnut',
+            data: otcMarketData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                onClick: (event, elements) => {
+                    if (elements.length > 0) {
+                        const chartElement = elements[0];
+                        const index = chartElement.index;
+                        const detailsText = otcMarketRawData[index].details;
+                        document.getElementById('otcDonutDetails').innerHTML = `<p><strong>${Array.isArray(otcMarketData.labels[index]) ? otcMarketData.labels[index].join(' ') : otcMarketData.labels[index]}:</strong> ${detailsText}</p>`;
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 10 }}},
+                    title: { display: true, text: 'OTC Derivatives Notional Outstanding by Type (Mid-2024)', color: '#00008B', font: { size: 14, weight: 'bold' }},
+                    tooltip: { callbacks: { title: commonTooltipTitleCallback, label: (context) => `$${context.parsed.toFixed(1)} Trillion` }}
+                }
+            }
+        });
+
+        const otcBreakdownAllData = {
+            labels: [wrapLabels('Interest Rate', 16), wrapLabels('Foreign Exchange', 16), wrapLabels('Equity', 16), wrapLabels('Credit', 16), wrapLabels('Commodity', 16)],
+            datasets: [{
+                label: 'Notional Outstanding ($ Trillion)',
+                data: [578.8, 129.9, 8.7, 9.2, 2.7],
+                backgroundColor: ['#87CEEB', '#20B2AA', '#4682B4', '#6495ED', '#00BFFF'],
+                borderColor: ['#4682B4', '#1A8E86', '#31698F', '#4773C8', '#00A6D9'],
+                borderWidth: 1
+            }]
+        };
+        otcBreakdownBarChartInstance = new Chart(document.getElementById('otcBreakdownBarChart'), {
+            type: 'bar',
+            data: JSON.parse(JSON.stringify(otcBreakdownAllData)), // Deep copy
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'OTC Derivatives Notional Amounts by Type (Mid-2024)', color: '#00008B', font: { size: 14, weight: 'bold' }},
+                    tooltip: { callbacks: { title: commonTooltipTitleCallback, label: (context) => `${context.dataset.label}: $${context.parsed.x.toFixed(1)} Trillion`}}
+                },
+                scales: { x: { title: { display: true, text: 'Notional Outstanding ($ Trillion)', color: '#00008B'}, ticks: { color: '#00008B' }, grid: { color: '#D1D5DB' }}, y: { ticks: { color: '#00008B', font: {size: 10}}, grid: { display: false }}}
+            }
+        });
+
+        document.getElementById('toggleIRD').addEventListener('click', () => {
+            otcBreakdownBarChartInstance.toggleDataVisibility(0);
+            otcBreakdownBarChartInstance.update();
+        });
+        document.getElementById('toggleFXD').addEventListener('click', () => {
+            otcBreakdownBarChartInstance.toggleDataVisibility(1);
+            otcBreakdownBarChartInstance.update();
+        });
+        document.getElementById('toggleOtherOTC').addEventListener('click', () => {
+            for(let i=2; i<5; i++) otcBreakdownBarChartInstance.toggleDataVisibility(i);
+            otcBreakdownBarChartInstance.update();
+        });
+
+
+        const centralClearingData = {
+            labels: [wrapLabels('Centrally Cleared IRD',16), wrapLabels('Non-Cleared IRD',16)],
+            datasets: [{ label: 'Interest Rate Derivatives Clearing', data: [76.9, 100 - 76.9], backgroundColor: ['#20B2AA', '#B0C4DE'], borderColor: '#FFFFFF', borderWidth: 2 }]
+        };
+        centralClearingDonutChartInstance = new Chart(document.getElementById('centralClearingDonutChart'), {
+            type: 'doughnut', data: centralClearingData,
+            options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }}}, title: { display: true, text: 'IRD Central Clearing (Mid-2024)', color: '#00008B', font: { size: 14, weight: 'bold' }}, tooltip: { callbacks: { title: commonTooltipTitleCallback, label: (context) => `${context.label}: ${context.parsed.toFixed(1)}%`}}}
+            }
+        });
+
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        function toggleDetails(elementId) {
+            const element = document.getElementById(elementId);
+            if (element.style.display === 'block') {
+                element.style.display = 'none';
+            } else {
+                element.style.display = 'block';
+                if (elementId === 'futuresDetails') drawPayoff('futuresPayoff', 'futures');
+                if (elementId === 'forwardsDetails') drawPayoff('forwardsPayoff', 'forwards');
+                if (elementId === 'optionsDetails') drawPayoff('callOptionPayoff', 'call');
+            }
+        }
+
+        function showModal(modalId) { document.getElementById(modalId).style.display = "block"; }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; }
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        }
+
+        const stockPriceSlider = document.getElementById('stockPriceSlider');
+        const stockPriceValueDisplay = document.getElementById('stockPriceValue');
+        const stockValueDisplay = document.getElementById('stockValue');
+        const putValueDisplay = document.getElementById('putValue');
+        const netPortfolioValueDisplay = document.getElementById('netPortfolioValue');
+        const stockProfitLossDisplay = document.getElementById('stockProfitLoss');
+        const hedgedProfitLossDisplay = document.getElementById('hedgedProfitLoss');
+
+        const initialStockPrice = 150;
+        const sharesOwned = 100;
+        const putStrikePrice = 145;
+        const putPremiumPaidTotal = 300;
+
+        function calculateProtectivePut() {
+            const currentStockPrice = parseFloat(stockPriceSlider.value);
+            stockPriceValueDisplay.textContent = currentStockPrice.toFixed(2);
+
+            const valueOfStock = currentStockPrice * sharesOwned;
+            stockValueDisplay.textContent = valueOfStock.toFixed(2);
+
+            let valueOfPut = Math.max(0, (putStrikePrice - currentStockPrice)) * sharesOwned;
+            putValueDisplay.textContent = valueOfPut.toFixed(2);
+            
+            const netPortfolioValue = valueOfStock + valueOfPut - putPremiumPaidTotal;
+            netPortfolioValueDisplay.textContent = netPortfolioValue.toFixed(2);
+
+            const profitLossOnStock = (currentStockPrice - initialStockPrice) * sharesOwned;
+            stockProfitLossDisplay.textContent = profitLossOnStock.toFixed(2);
+            
+            const profitLossOnHedgedPosition = netPortfolioValue - (initialStockPrice * sharesOwned);
+            hedgedProfitLossDisplay.textContent = profitLossOnHedgedPosition.toFixed(2);
+        }
+        stockPriceSlider.addEventListener('input', calculateProtectivePut);
+        calculateProtectivePut(); // Initial calculation
+
+        function drawPayoff(canvasId, type) {
+            const container = document.getElementById(canvasId);
+            container.innerHTML = ''; // Clear previous drawing
+
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            const yAxis = document.createElement('div');
+            yAxis.className = 'axis y-axis';
+            container.appendChild(yAxis);
+
+            const xAxis = document.createElement('div');
+            xAxis.className = 'axis x-axis';
+            container.appendChild(xAxis);
+            
+            const originX = width * 0.1; // y-axis position
+            const originY = height * 0.5; // x-axis position (profit/loss = 0)
+
+            // Labels for axes
+            const profitLabel = document.createElement('span');
+            profitLabel.className = 'axis-label';
+            profitLabel.textContent = 'P/L';
+            profitLabel.style.top = '5px';
+            profitLabel.style.left = (originX + 5) + 'px';
+            container.appendChild(profitLabel);
+
+            const assetPriceLabel = document.createElement('span');
+            assetPriceLabel.className = 'axis-label';
+            assetPriceLabel.textContent = 'Asset Price';
+            assetPriceLabel.style.bottom = (height - originY + 5) + 'px';
+            assetPriceLabel.style.right = '5px';
+            container.appendChild(assetPriceLabel);
+
+
+            const line = document.createElement('div');
+            line.className = 'payoff-line';
+            
+            let strikePointX = width * 0.5; // Mid-point for strike representation
+
+            if (type === 'futures' || type === 'forwards') { // Long position
+                // Simplified linear payoff for futures/forwards
+                // Line from bottom-left quadrant to top-right quadrant, passing through originX, originY
+                // For y = x - strike (shifted), slope = 1
+                const angle = -45; // For a positive slope line
+                const length = width * 0.8; 
+                line.style.width = length + 'px';
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.transformOrigin = 'left center';
+                line.style.left = (originX - (length * 0.2 * Math.cos(angle * Math.PI/180))) + 'px'; 
+                line.style.top = (originY - (length * 0.2 * Math.sin(angle * Math.PI/180))) + 'px';
+            } else if (type === 'call') { // Long Call Option
+                // Payoff: Max(0, S-K) - Premium. Kink at Strike.
+                // Part 1: Flat line (loss = premium) up to strike
+                const flatPart = document.createElement('div');
+                flatPart.className = 'payoff-line';
+                flatPart.style.backgroundColor = '#4682B4'; // Different color for option
+                flatPart.style.width = (strikePointX - originX) + 'px';
+                flatPart.style.left = originX + 'px';
+                flatPart.style.top = (originY + height * 0.1) + 'px'; // Represent premium cost
+                container.appendChild(flatPart);
+
+                // Part 2: Sloping line after strike
+                const slopePart = document.createElement('div');
+                slopePart.className = 'payoff-line';
+                slopePart.style.backgroundColor = '#4682B4';
+                const slopeLength = width - strikePointX;
+                slopePart.style.width = Math.sqrt(slopeLength*slopeLength + (height*0.4)*(height*0.4)) + 'px'; // Approx length
+                slopePart.style.transform = 'rotate(-30deg)'; // Approximate upward slope
+                slopePart.style.transformOrigin = 'left center';
+                slopePart.style.left = strikePointX + 'px';
+                slopePart.style.top = (originY + height * 0.1) + 'px';
+                container.appendChild(slopePart);
+                
+                const strikeLabel = document.createElement('span');
+                strikeLabel.className = 'axis-label';
+                strikeLabel.textContent = 'K';
+                strikeLabel.style.top = (originY + 5) + 'px';
+                strikeLabel.style.left = (strikePointX - 5) + 'px';
+                container.appendChild(strikeLabel);
+                return; // Skip common line appending for options
+            }
+            container.appendChild(line);
+        }
+
+    </script>
+</body>
+</html>
